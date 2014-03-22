@@ -312,7 +312,7 @@ class DOM extends \DomDocument
                 continue;
             }
 
-            $error = new LibXMLError();
+            $error = new \LibXMLError();
             $error->level   = LIBXML_ERR_ERROR;
             $error->code    = 0;
             $error->column  = 0;
