@@ -234,7 +234,7 @@ class DOM extends \DomDocument
             return $success;
         }
 
-        $schema     = new DomDocument();
+        $schema     = new \DomDocument();
         if ($source == 'file') {
             $success = $schema->load($data);
         } else {
@@ -249,8 +249,8 @@ class DOM extends \DomDocument
             return false;
         }
 
-        $processor  = new XSLTProcessor();
-        $extractor  = new DomDocument();
+        $processor  = new \XSLTProcessor();
+        $extractor  = new \DomDocument();
         $success    = $extractor->loadXML(file_get_contents($xsl1));
         if (!$quiet) {
             $this->errors = array_merge($this->errors, libxml_get_errors());
@@ -266,7 +266,7 @@ class DOM extends \DomDocument
             return false;
         }
 
-        $validator  = new DomDocument();
+        $validator  = new \DomDocument();
         $xsl2       = str_replace(
             '@xsl_skeleton@',
             'data:;base64,' . base64_encode(file_get_contents($skeleton)),
@@ -287,7 +287,7 @@ class DOM extends \DomDocument
             return false;
         }
 
-        $processor = new XSLTProcessor();
+        $processor = new \XSLTProcessor();
         $processor->importStylesheet($result);
         $result = $processor->transformToDoc($this);
         if ($result === false) {
