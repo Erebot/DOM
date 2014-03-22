@@ -1,0 +1,19 @@
+<phpunit forceCoversAnnotation="true">
+  <testsuites>
+    <testsuite name="Erebot/DOM">
+      <directory>tests/</directory>
+    </testsuite>
+  </testsuites>
+
+  <filter>
+    <whitelist processUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">src/</directory>
+    </whitelist>
+  </filter>
+
+  <logging>
+    <log type="coverage-html" target="docs/coverage/"
+        charset="UTF-8" yui="true" highlight="false"
+        lowUpperBound="35" highLowerBound="70"/>
+  </logging>
+</phpunit>
