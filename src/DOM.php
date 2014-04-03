@@ -269,7 +269,7 @@ class DOM extends \DomDocument
         $validator  = new \DomDocument();
         $xsl2       = str_replace(
             '@xsl_skeleton@',
-            'data:;base64,' . base64_encode(file_get_contents($skeleton)),
+            'data:application/xslt+xml;base64,' . base64_encode(file_get_contents($skeleton)),
             file_get_contents($xsl2)
         );
         $success    = $validator->loadXML($xsl2);
