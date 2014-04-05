@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<element name="Root" xmlns="http://relaxng.org/ns/structure/1.0">
+   <sch:pattern name="Test constraints on the Root element" 
+     xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+    <sch:rule context="Root">
+      <sch:assert test="text() = 42">Wrong answer to life, the universe and everything</sch:assert>
+    </sch:rule>
+   </sch:pattern>
+   <text/>
+</element>

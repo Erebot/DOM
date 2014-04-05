@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+ <xs:element name="Root" type="xs:string">
+  <xs:annotation>
+   <xs:appinfo>
+    <sch:pattern name="Answer to life, the universe and everything" xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+      <sch:rule context="Root">
+       <sch:assert test="text() = 42">Wrong answer to life, the universe and everything</sch:assert>
+      </sch:rule>
+    </sch:pattern>
+   </xs:appinfo>
+  </xs:annotation>
+ </xs:element>
+</xs:schema>

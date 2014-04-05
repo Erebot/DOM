@@ -3,9 +3,10 @@
 	Stylesheet for extracting Schematron information from a RELAX-NG schema.
 	Based on the stylesheet for extracting Schematron information from W3C XML Schema.
 	Created by Eddie Robertsson 2002/06/01
+	Update for ISO Schematron Rick Jelliffe 2010/04/14
 -->
 <xsl:transform version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:rng="http://relaxng.org/ns/structure/1.0">
+xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:rng="http://relaxng.org/ns/structure/1.0">
 	<!-- Set the output to be XML with an XML declaration and use indentation -->
 	<xsl:output method="xml" omit-xml-declaration="no" indent="yes" standalone="yes"/>
 	<!-- -->

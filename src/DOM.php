@@ -20,6 +20,10 @@
 
 namespace Erebot;
 
+if (!defined('XML_PARSE_BIG_LINES')) {
+    define('XML_PARSE_BIG_LINES', 1 << 22);
+}
+
 /**
  * \brief
  *      An extension of PHP's DomDocument class that implements
@@ -218,14 +222,13 @@ class DOM extends \DomDocument
             $base = dirname(__DIR__) .
                     DIRECTORY_SEPARATOR . 'data' .
                     DIRECTORY_SEPARATOR;
-            $xsl1 = $base . $schemaSource . '2Schtrn.xsl';
-            $xsl2 = $base . 'schematron-custom.xsl';
-            $skeleton = $base . 'skeleton1-5.xsl';
-        } catch (Exception $e) {
+            $xsl1 = $base . 'ExtractSchFrom' . $schemaSource . '.xsl';
+            $skeleton = $base . 'iso_schematron_skeleton_for_xslt1.xsl';
+        } catch (\Exception $e) {
             return false;
         }
 
-        $quiet      = !libxml_use_internal_errors();
+        $quiet = !libxml_use_internal_errors();
         if (!$quiet) {
             $this->errors = array_merge($this->errors, libxml_get_errors());
             libxml_clear_errors();
@@ -234,11 +237,11 @@ class DOM extends \DomDocument
             return $success;
         }
 
-        $schema     = new \DomDocument();
-        if ($source == 'file') {
-            $success = $schema->load($data);
+        $schema = new \DomDocument();
+        if ($source === 'file') {
+            $success = $schema->load($data, XML_PARSE_BIG_LINES);
         } else {
-            $success = $schema->loadXML($data);
+            $success = $schema->loadXML($data, XML_PARSE_BIG_LINES);
         }
 
         if (!$quiet) {
@@ -249,9 +252,9 @@ class DOM extends \DomDocument
             return false;
         }
 
-        $processor  = new \XSLTProcessor();
+        // Load the extracting stylesheet.
         $extractor  = new \DomDocument();
-        $success    = $extractor->loadXML(file_get_contents($xsl1));
+        $success    = $extractor->loadXML(file_get_contents($xsl1), XML_PARSE_BIG_LINES);
         if (!$quiet) {
             $this->errors = array_merge($this->errors, libxml_get_errors());
             libxml_clear_errors();
@@ -260,19 +263,18 @@ class DOM extends \DomDocument
             return false;
         }
 
+        // Generate a Schematron schema from the rules
+        // embedded in the RNG or XSD schema.
+        $processor = new \XSLTProcessor();
         $processor->importStylesheet($extractor);
         $result = $processor->transformToDoc($schema);
         if ($result === false) {
             return false;
         }
 
+        // Load the Schematron skeleton.
         $validator  = new \DomDocument();
-        $xsl2       = str_replace(
-            '@xsl_skeleton@',
-            'data:application/xslt+xml;base64,' . base64_encode(file_get_contents($skeleton)),
-            file_get_contents($xsl2)
-        );
-        $success    = $validator->loadXML($xsl2);
+        $success    = $validator->loadXML(file_get_contents($skeleton), XML_PARSE_BIG_LINES);
         if (!$quiet) {
             $this->errors = array_merge($this->errors, libxml_get_errors());
             libxml_clear_errors();
@@ -281,27 +283,30 @@ class DOM extends \DomDocument
             return false;
         }
 
+        // Generate the validation XML stylesheet
+        // using the Schematron schema & skeleton.
         $processor->importStylesheet($validator);
         $result = $processor->transformToDoc($result);
         if ($result === false) {
             return false;
         }
 
+        // Apply the validation stylesheet to the document.
         $processor = new \XSLTProcessor();
+        $processor->registerPHPFunctions('\\Erebot\\DOM::getNodeLineNo');
         $processor->importStylesheet($result);
         $result = $processor->transformToDoc($this);
         if ($result === false) {
             return false;
         }
 
-        $root   = $result->firstChild;
         $valid  = true;
-        foreach ($root->childNodes as $child) {
-            if ($child->nodeType != XML_ELEMENT_NODE) {
+        foreach ($result->documentElement->childNodes as $child) {
+            if ($child->nodeType !== XML_ELEMENT_NODE) {
                 continue;
             }
 
-            if ($child->localName != 'assertionFailure') {
+            if ($child->localName !== 'assertionFailure') {
                 continue;
             }
 
@@ -322,13 +327,15 @@ class DOM extends \DomDocument
             $error->path    = '';
 
             foreach ($child->childNodes as $subchild) {
-                if ($subchild->nodeType != XML_ELEMENT_NODE) {
+                if ($subchild->nodeType !== XML_ELEMENT_NODE) {
                     continue;
                 }
-                if ($subchild->localName == 'description' && $error->message == '') {
+                if ($subchild->localName === 'description' && $error->message === '') {
                     $error->message = $subchild->textContent;
-                } elseif ($subchild->localName == 'location' && $error->path == '') {
+                } elseif ($subchild->localName === 'location' && $error->path === '') {
                     $error->path = $subchild->textContent;
+                } elseif ($subchild->localName === 'line') {
+                    $error->line = (int) $subchild->textContent;
                 }
             }
             $this->errors[] = $error;
@@ -388,5 +395,13 @@ class DOM extends \DomDocument
     public function clearErrors()
     {
         $this->errors = array();
+    }
+
+    public static function getNodeLineNo(array $nodes)
+    {
+        if (count($nodes) !== 1 || !($nodes[0] instanceof \DOMNode )) {
+            throw new \Exception();
+        }
+        return $nodes[0]->getLineNo();
     }
 }
