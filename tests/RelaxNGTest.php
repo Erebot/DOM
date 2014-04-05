@@ -32,6 +32,9 @@ class RelaxNGTest extends PHPUnit_Framework_TestCase
         parent::tearDown();
     }
 
+    /**
+     * @covers \Erebot\DOM
+     */
     public function testValidationSuccess()
     {
         $dom = new \Erebot\DOM();
@@ -40,6 +43,9 @@ class RelaxNGTest extends PHPUnit_Framework_TestCase
         $this->assertSame(0, count($dom->getErrors()));
     }
 
+    /**
+     * @covers \Erebot\DOM
+     */
     public function testValidationFailure()
     {
         $dom = new \Erebot\DOM();
