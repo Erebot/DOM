@@ -1,4 +1,4 @@
-<phpunit forceCoversAnnotation="true">
+<phpunit forceCoversAnnotation="true" bootstrap="vendor/autoload.php">
   <testsuites>
     <testsuite name="Erebot/DOM">
       <directory>tests/</directory>
