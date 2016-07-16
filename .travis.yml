@@ -1,25 +1,33 @@
 language: php
 
+sudo: false
+
 php:
-    - 5.3.3
     - 5.3
     - 5.4
     - 5.5
     - 5.6
+    - 7.0
+    - nightly
     - hhvm
- 
+    - hhvm-nightly
+
+cache:
+    directories:
+    - vendor/
+
 notifications:
     email: false
     irc: "irc.iiens.net#Erebot"
 
 before_script:
-    - if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ]; then sudo "$TRAVIS_BUILD_DIR/.travis.sh"; fi
     - composer self-update -n
     - composer install --dev -n
 
-script: phpunit --coverage-clover clover.xml --bootstrap vendor/autoload.php tests/
+script:
+    - vendor/bin/phpunit --coverage-clover clover.xml --bootstrap vendor/autoload.php tests/
 
 after_script:
     - composer require --dev "satooshi/php-coveralls dev-master"
-    - php vendor/bin/coveralls -n -v
+    - vendor/bin/coveralls -n -v
 
