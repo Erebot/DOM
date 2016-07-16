@@ -2,7 +2,7 @@
     "prefer-stable": true,
     "name": "erebot/dom",
     "description": "Adds Schematron validation support to PHP's DOM extension",
-    "keywords": ["dom", "schematron", "validation"],
+    "keywords": ["DOM", "schematron", "validation", "XML"],
     "homepage": "https://github.com/Erebot/DOM",
     "license": "GPL-3.0+",
     "authors": [
@@ -13,9 +13,7 @@
         }
     ],
     "support": {
-        "email": "erebot@erebot.net",
         "issues": "https://github.com/Erebot/DOM/issues",
-        "wiki": "http://erebot.github.io/Erebot/",
         "irc": "irc://irc.iiens.net/Erebot",
         "source": "https://github.com/Erebot/DOM"
     },
