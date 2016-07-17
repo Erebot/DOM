@@ -26,7 +26,7 @@ before_script:
 script:
     - vendor/bin/phpunit --coverage-clover clover.xml
 
-after_sucess:
+after_success:
     - composer require --dev satooshi/php-coveralls
     - travis_retry vendor/bin/coveralls -n -v
 
