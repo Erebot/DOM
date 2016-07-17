@@ -21,7 +21,7 @@ notifications:
 
 before_script:
     - composer self-update -n
-    - composer install --dev -n
+    - composer install -n
 
 script:
     - vendor/bin/phpunit --coverage-clover clover.xml
